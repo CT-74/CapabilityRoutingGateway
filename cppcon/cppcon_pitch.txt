@@ -1,75 +1,38 @@
-Title: Reaching the Hardware Limit: Universal Decoupling and Zero-Cost Capability Routing in C++
+Title: From Build Wall to Silicon Ceiling: Zero-Registry Plugin Systems and Branchless Behavioral Dispatch in C++
 
 Abstract:
-Large-scale C++ systems suffer from the "Build Wall" — a state where shared headers
-and centralized registries force a compilation tax that scales with team size. This
-session introduces the Capability Routing Gateway (CRG), a linker-driven C++
-framework that eliminates this tax by making modules completely anonymous to each
-other: features self-register at link time, and the core discovers them only when
-needed, with no shared headers and no Init() functions. The result is a fully
-functional plugin system obtained for free as a side effect of the architecture.
-The session is supported by an interactive WebAssembly simulator allowing
-real-time stress-testing of up to 150,000 entities directly in the browser.
+If you have ever triggered a 200-file recompile by changing a single header, or hit a throughput wall when thousands of objects change behavior under load, this session is for you. The Capability Routing Grid (CRG) is an original linker-driven architectural pattern that solves both problems: it eliminates centralized registries so that modules self-register with zero shared headers, and it models behavioral dispatch as a branchless coordinate lookup so that the hardware prefetcher never loses its stream. These techniques generalize across domains: plugin architectures in tooling, behavioral routing in robotics and simulation, rule engines in finance — any system that requires Mutual Anonymity between its core and the capabilities it orchestrates.
 
-CRG is built on strictly orthogonal pillars — you pay only for the dimensions you
-use. At its simplest, it is pure linker-driven discovery. Add a polymorphic
-boundary, and you get interface-to-template binding. Add contextual axes (State,
-Zone, Authority), and you get O(1) tensor-based routing using Horner's method. At
-each level, the architecture stays C++-idiomatic and zero-allocation. For opaque
-data transport, an optional type-erased shell breaks the fundamental C++ constraint
-against virtual template methods. Whether crossing architectural boundaries or
-providing callers with a clean OOP illusion (Invoke/TryInvoke), this shell
-completely decouples concrete state from templated logic.
+CRG is a pay-as-you-go architecture: its pillars are independent — adopt one, some, or all, without coupling between them.
 
-In high-frequency execution paths, CRG mirrors the L1I/L1D split of modern CPUs
-by caching resolved logic pointers in ECS components. Behavior transitions become
-coordinate updates — the memory layout never changes, so the hardware prefetcher
-never loses its stream. Benchmarks show this "Structural Immunity" effectively
-doubles memory throughput at 10% mutation rates compared to traditional
-archetype-based architectures. At low mutation rates (≤1%), ECS matches CRG —
-the honest answer is that CRG's value scales with state volatility.
+Pillar 1 — Linker-Driven Discovery: Declare a variable in a .cpp file, and it registers itself. No Init() function, no shared header, no central registry. The result is a fully decoupled plugin system obtained as a fundamental property of the architecture — not a framework built on top of it.
+
+Beyond discovery, two optional pillars extend the pattern:
+
+Pillar 2 — Orthogonal Transport: A type-erased wrapper (the ModelShell) breaks the fundamental C++ constraint against virtual template methods, providing a clean OOP interface (Invoke/TryInvoke) while strictly separating concrete state from templated logic — with SBO (stack-allocation) guarantees and full Natvis debuggability.
+
+Pillar 3 — N-Dimensional Dispatch: Behavioral routing is modeled as a coordinate lookup within a CapabilityTensor: by applying Horner's Method to contextual axes (e.g. State, Authority, Environment), complex decisions become a pure branchless arithmetic offset. This "Structural Immunity" keeps data static in memory while capabilities are routed to it — preventing cache-thrashing and ensuring the prefetcher never loses its stream.
+
+Using concrete examples from high-performance simulation and data-oriented design, we demonstrate how CRG sustains over 30 GiB/s memory throughput under high state-transition frequency, where traditional in-memory structural reorganization patterns drop by 30% as behavioral churn increases.
 
 Attendees will learn how to:
-* Achieve mutual anonymity: linker-driven NodeList registration with UniversalAnchor,
-  supporting monolithic and DLL/hot-reload topologies with a single macro switch.
-* Break the Virtual Deadlock using the optional ModelShell — a type-erased container
-  inspired by Klaus Iglberger's Type Erasure pattern, stripped of all logic, with
-  SBO guarantees and natvis debuggability.
-* Project behaviors in O(1) using a flat CapabilityTensor indexed by DenseTypeID
-  and a CapabilitySpace offset computed via Horner's method — no search, no branches,
-  no virtual calls in the hot path.
-* Integrate with any data-driven system using the Brain/Muscle pattern: ActiveCapability
-  caches the resolved result at decision frequency; the hot loop invokes it at
-  execution frequency with a direct function pointer.
-* Identify the mathematical break-even point where CRG's structural immunity
-  outperforms traditional ECS, using interactive simulation (up to 150k entities).
+- Achieve Mutual Anonymity: implement linker-driven registration using UniversalAnchor, supporting both monolithic and DLL topologies — no shared registries.
+- Break the Virtual Deadlock: leverage the ModelShell pattern (inspired by Klaus Iglberger's Type Erasure) to decouple data from logic, with SBO (stack-allocation) guarantees and Natvis debuggability.
+- Implement Branchless Dispatch: project complex behaviors in O(1) using a flat CapabilityTensor indexed via Horner's method — eliminating searches, branches, and virtual calls in the hot path.
+- Apply Decision/Execution Separation: cache the function pointer resolved by the CapabilityTensor at decision frequency, and invoke it directly at execution frequency — reaching the physical RAM bandwidth ceiling.
+- Identify the Break-Even Point: determine when structural immunity outperforms any pattern where changing behavior requires restructuring objects in memory, using an interactive browser simulation capped at 150k entities for demonstration purposes.
 
 Outline:
-* 00-05: THE HOOK — Hardware-Software Symmetry. Why peak efficiency requires a
-  physical split between instructions (L1I) and data (L1D). The Build Wall: one
-  bool, 38 minutes, every programmer, every day.
-* 05-15: LINKER-DRIVEN DISCOVERY — Mutual anonymity via NodeList and UniversalAnchor.
-  How features self-register without shared headers. CapabilityBinding expands a
-  TypeList across templatized capabilities. Plugin system obtained for free.
-* 15-25: ORTHOGONAL TRANSPORT (COLD PATH) — Breaking the Virtual Deadlock.
-  The optional ModelShell: type erasure stripped of all logic, SBO-guaranteed.
-  Identity Decoupling: Data, Logic, Binding as orthogonal dimensions.
-  Invoke/TryInvoke as the cold-path OOP illusion.
-* 25-35: COMPLEXITY LADDER & N-DIMENSIONAL RESOLUTION — CRG as a pay-per-dimension
-  framework: 0D (discovery) to ND (contextual routing). Collapsing sparse hashes
-  into DenseTypeID. Resolving N-dimensional coordinates in O(1) via Horner's method
-  into a flat CapabilityTensor.
-* 35-45: ECS SYMBIOSIS — Immutable topology as a performance guarantee. Brain
-  (Decision, 5Hz) vs. Muscle (Execution, 60fps). ActiveCapability for structural
-  immunity and raw static dispatch. Three performance levels: 20ns → 7ns → 1.5ns.
-* 45-54: BENCHMARKS & ANALYSIS — CRG vs ECS at 1%/5%/10% mutation rates. Live
-  visual stress-test (50k entities). The mathematical break-even point. When to
-  use CRG and when not to.
-* 54-55: CONCLUSION — Zero Coupling. Zero Search. Zero Migration. Stop fighting C++.
-* 55-60: Q&A — Deep dive into DLL boundaries, ODR-safety, and hot-reload integration.
+- 00-05: THE HOOK — Hardware-Software Symmetry. Why peak efficiency requires a physical split between instructions (L1I) and data (L1D). The Build Wall: one bool, 38 minutes, every programmer.
+- 05-15: LINKER-DRIVEN DISCOVERY — Mutual Anonymity via NodeList and UniversalAnchor. Features self-register without shared headers. CapabilityBinding expands a TypeList across templatized capabilities. Plugin system as a side effect.
+- 15-25: ORTHOGONAL TRANSPORT — Breaking the Virtual Deadlock. The ModelShell: type erasure stripped of all logic, SBO-guaranteed. Identity Decoupling: Data, Logic, Binding as orthogonal dimensions. Invoke/TryInvoke as the cold-path OOP illusion.
+- 25-35: N-DIMENSIONAL RESOLUTION — From 0D (pure discovery) to ND (contextual routing). Collapsing sparse hashes into DenseTypeID. Resolving N-dimensional coordinates in O(1) via Horner's method into a flat CapabilityTensor.
+- 35-45: SYSTEM SYMBIOSIS — Structural Immunity as a performance guarantee. Decision/Execution separation. ActiveCapability: caching resolved dispatch at decision time for raw static invocation at execution time. Three performance tiers: virtual dispatch -> cached pointer -> prefetcher-aligned direct call — each a measurable step toward the RAM bandwidth ceiling.
+- 45-55: BENCHMARKS & ANALYSIS — CRG vs. in-memory structural reorganization at 1%/5%/10% state-transition rates. Live visual stress-test (50k entities). Mathematical break-even point and when not to use CRG.
+- 55-60: Q&A — ODR-safety, DLL boundaries (implicit link natively supported; explicit link via lightweight bootstrap), and hot-reload integration.
 
 Comments to Reviewers / Additional Materials:
-Note: To respect the double-blind review process, the GitHub repository link has
-been removed. However, the interactive WebAssembly simulator mentioned in the
-abstract has been hosted on an anonymized domain for your evaluation:
-Interactive Simulator: https://dreamy-liger-3c1bd8.netlify.app/
+Note: To respect the double-blind review process, the GitHub repository link has been omitted. An interactive 3D Tensor Visualizer demonstrating the O(1) coordinate resolution at the core of this talk is available for evaluation:
+
+O(1) Tensor Routing 3D Visualizer (WebGL):
+https://idyllic-kitsune-9d47db.netlify.app/

@@ -1,0 +1,28 @@
+{
+  "Drone": {
+    "speed": 1.0,
+    "flee_threshold": 30.0,
+    "perception": {
+      "melee": 100.0,
+      "ranged": 300.0
+    },
+    "physics": {
+      "mass": 1.0,
+      "radius": 3.0,
+      "max_speed": 300.0
+    }
+  },
+  "Commander": {
+    "speed": 0.8,
+    "flee_threshold": 0.0,
+    "perception": {
+      "melee": 100.0,
+      "ranged": 300.0
+    },
+    "physics": {
+      "mass": 5.0,
+      "radius": 8.0,
+      "max_speed": 150.0
+    }
+  }
+}

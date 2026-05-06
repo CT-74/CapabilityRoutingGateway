@@ -15,6 +15,7 @@ def main():
         "crg_benchmark_bar.py",          # Mutation penalty (Bar chart)
         "crg_benchmark_final.py",        # Structural Immunity (Stage 12)
         "crg_compare_perf.py",           # Raw Bandwidth (Dispatch Tax)
+        "crg_benchmark_epilogue.py",     # OOP vs CRG energy tax
         "plot_breakeven.py",             # ECS vs CRG Curve
         "plot_tensor_3d.py",             # 3D Tensor Visualization
         "plot_tensor_routing_dark.py"    # README Architecture diagram
